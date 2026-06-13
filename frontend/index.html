@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>IoT Vehicle Tracking & Theft Prevention System</title>
+  <link rel="stylesheet" href="assets/styles.css" />
+</head>
+<body>
+  <header class="hero">
+    <div>
+      <p class="eyebrow">IoT Course Project</p>
+      <h1>Vehicle Tracking & Theft Prevention System</h1>
+      <p class="subtitle">Real-time GPS location, geofence status, theft alerts, engine lock/unlock commands, logs and reports.</p>
+    </div>
+    <div class="status-pill" id="backendStatus">Backend not tested</div>
+  </header>
+
+  <main class="layout">
+    <section class="panel connection-panel">
+      <div>
+        <h2>Backend Connection</h2>
+        <p>Start backend first, then run this frontend.</p>
+      </div>
+      <label class="input-group">
+        <span>Backend URL</span>
+        <input id="backendUrl" type="url" value="http://127.0.0.1:8000" />
+      </label>
+      <div class="button-row wrap">
+        <button id="saveUrlBtn">Save URL</button>
+        <button id="testBtn" class="secondary">Test</button>
+        <button id="refreshBtn" class="secondary">Refresh</button>
+        <button id="downloadCsvBtn" class="secondary">Download CSV</button>
+        <button id="downloadPdfBtn" class="secondary">Download PDF</button>
+        <button id="clearBtn" class="danger-outline">Clear Logs</button>
+      </div>
+    </section>
+
+    <section class="panel alert-panel" id="alertPanel">
+      <div>
+        <p class="eyebrow">Live Security Status</p>
+        <h2 id="statusText">NO DATA</h2>
+        <p id="alertText">No readings yet. Generate a simulation or add a manual reading.</p>
+      </div>
+      <div class="lock-badge" id="lockBadge">UNLOCKED</div>
+    </section>
+
+    <section class="cards-grid">
+      <article class="metric-card">
+        <span>Vehicle ID</span>
+        <strong id="vehicleId">--</strong>
+        <small>Tracking unit</small>
+      </article>
+      <article class="metric-card">
+        <span>Speed</span>
+        <strong><span id="speed">0.0</span> km/h</strong>
+        <small>GPS speed simulation</small>
+      </article>
+      <article class="metric-card">
+        <span>Geofence</span>
+        <strong id="geofence">--</strong>
+        <small>Inside / outside safe zone</small>
+      </article>
+      <article class="metric-card">
+        <span>Distance From Base</span>
+        <strong><span id="distance">0.0</span> m</strong>
+        <small>Haversine distance</small>
+      </article>
+      <article class="metric-card">
+        <span>Latitude</span>
+        <strong id="latitude">--</strong>
+        <small>GPS coordinate</small>
+      </article>
+      <article class="metric-card">
+        <span>Longitude</span>
+        <strong id="longitude">--</strong>
+        <small>GPS coordinate</small>
+      </article>
+      <article class="metric-card">
+        <span>Ignition</span>
+        <strong id="ignition">--</strong>
+        <small>Vehicle engine state</small>
+      </article>
+      <article class="metric-card">
+        <span>Total Readings</span>
+        <strong id="totalReadings">0</strong>
+        <small>Saved in backend CSV</small>
+      </article>
+    </section>
+
+    <section class="two-column">
+      <div class="panel map-panel">
+        <div class="section-header">
+          <div>
+            <p class="eyebrow">Live Location</p>
+            <h2>Vehicle Map</h2>
+          </div>
+          <a id="mapsLink" class="link-button" href="#" target="_blank" rel="noopener">Open in Google Maps</a>
+        </div>
+        <iframe id="mapFrame" title="Vehicle Location Map" loading="lazy"></iframe>
+        <p class="hint" id="lastUpdated">Last updated: --</p>
+      </div>
+
+      <div class="panel control-panel">
+        <p class="eyebrow">Remote Engine Control</p>
+        <h2>Lock / Unlock</h2>
+        <p>Use this for theft prevention simulation. In real hardware, this command controls a relay module.</p>
+        <div class="button-row">
+          <button id="lockBtn" class="danger">LOCK ENGINE</button>
+          <button id="unlockBtn" class="success">UNLOCK ENGINE</button>
+        </div>
+        <div class="command-log" id="commandLog">No command sent yet.</div>
+      </div>
+    </section>
+
+    <section class="panel">
+      <div class="section-header">
+        <div>
+          <p class="eyebrow">Virtual Simulation</p>
+          <h2>Generate GPS Readings</h2>
+        </div>
+        <span class="hint">Use this when you do not have ESP32/GPS hardware.</span>
+      </div>
+      <div class="simulation-grid">
+        <button data-mode="parked" class="secondary">Parked</button>
+        <button data-mode="normal" class="secondary">Normal Movement</button>
+        <button data-mode="outside" class="secondary">Outside Geofence</button>
+        <button data-mode="overspeed" class="secondary">Overspeed</button>
+        <button data-mode="theft" class="danger">Theft Simulation</button>
+        <button data-mode="unlock_normal" class="success">Unlocked Normal</button>
+      </div>
+    </section>
+
+    <section class="two-column">
+      <form class="panel form-panel" id="manualForm">
+        <p class="eyebrow">Manual Reading</p>
+        <h2>Add GPS Data</h2>
+        <div class="form-grid">
+          <label>
+            <span>Vehicle ID</span>
+            <input id="manualVehicleId" value="VEH-001" />
+          </label>
+          <label>
+            <span>Latitude</span>
+            <input id="manualLat" type="number" step="0.000001" value="18.629800" />
+          </label>
+          <label>
+            <span>Longitude</span>
+            <input id="manualLon" type="number" step="0.000001" value="73.799700" />
+          </label>
+          <label>
+            <span>Speed km/h</span>
+            <input id="manualSpeed" type="number" step="0.1" min="0" value="20" />
+          </label>
+          <label class="checkbox-row">
+            <input id="manualIgnition" type="checkbox" checked />
+            <span>Ignition ON</span>
+          </label>
+        </div>
+        <button type="submit">Save Reading</button>
+      </form>
+
+      <form class="panel form-panel" id="settingsForm">
+        <p class="eyebrow">Threshold Settings</p>
+        <h2>Safe Zone & Alerts</h2>
+        <div class="form-grid">
+          <label>
+            <span>Base Latitude</span>
+            <input id="baseLat" type="number" step="0.000001" />
+          </label>
+          <label>
+            <span>Base Longitude</span>
+            <input id="baseLon" type="number" step="0.000001" />
+          </label>
+          <label>
+            <span>Geofence Radius m</span>
+            <input id="radius" type="number" step="1" min="1" />
+          </label>
+          <label>
+            <span>Speed Limit km/h</span>
+            <input id="speedLimit" type="number" step="1" min="1" />
+          </label>
+          <label>
+            <span>Locked Movement Threshold km/h</span>
+            <input id="lockedSpeed" type="number" step="0.1" min="0" />
+          </label>
+        </div>
+        <button type="submit">Save Settings</button>
+      </form>
+    </section>
+
+    <section class="panel">
+      <div class="section-header">
+        <div>
+          <p class="eyebrow">Route History</p>
+          <h2>Recent Vehicle Logs</h2>
+        </div>
+        <span class="hint">Latest 50 readings</span>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Time</th>
+              <th>Vehicle</th>
+              <th>Location</th>
+              <th>Speed</th>
+              <th>Lock</th>
+              <th>Geofence</th>
+              <th>Status</th>
+              <th>Alert</th>
+            </tr>
+          </thead>
+          <tbody id="logsBody">
+            <tr><td colspan="8" class="empty">No logs yet</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+  </main>
+
+  <div id="toast" class="toast hidden"></div>
+  <script src="assets/app.js"></script>
+</body>
+</html>

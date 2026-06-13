@@ -1,0 +1,1 @@
+timestamp,vehicle_id,latitude,longitude,speed_kmph,ignition_on,engine_locked,distance_from_base_m,geofence_status,vehicle_status,alert_type,alert_message,google_maps_url,source

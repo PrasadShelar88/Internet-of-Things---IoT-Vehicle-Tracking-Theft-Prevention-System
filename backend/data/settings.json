@@ -1,0 +1,8 @@
+{
+  "vehicle_id": "VEH-001",
+  "base_latitude": 18.6298,
+  "base_longitude": 73.7997,
+  "geofence_radius_m": 200.0,
+  "speed_limit_kmph": 80.0,
+  "locked_speed_threshold_kmph": 5.0
+}
